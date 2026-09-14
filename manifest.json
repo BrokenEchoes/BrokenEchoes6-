@@ -1,0 +1,9 @@
+{
+  "name": "BrokenEchoes6",
+  "short_name": "BrokenEchoes6",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b0b0f",
+  "theme_color": "#0b0b0f",
+  "description": "BrokenEchoes6 Music App"
+}
