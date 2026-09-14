@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BrokenEchoes6</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(160deg,#111,#24102f,#080808);
+  color:white;
+  min-height:100vh;
+}
+
+.header{
+  text-align:center;
+  padding:22px 10px 12px;
+}
+
+.header h1{
+  margin:0;
+  font-size:28px;
+}
+
+.header p{
+  margin:6px 0;
+  color:#aaa;
+}
+
+.now-playing{
+  margin:15px;
+  padding:20px;
+  border-radius:25px;
+  background:rgba(255,255,255,0.08);
+  text-align:center;
+  box-shadow:0 10px 35px rgba(0,0,0,.4);
+}
+
+.cover{
+  width:210px;
+  height:210px;
+  margin:auto;
+  border-radius:22px;
+  background:linear-gradient(135deg,#ff416c,#7b2cff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:75px;
+  box-shadow:0 15px 40px rgba(0,0,0,.5);
+}
+
+.now-playing h2{
+  margin:18px 0 5px;
+  font-size:21px;
+}
+
+.now-playing p{
+  color:#aaa;
+  margin:0 0 15px;
+}
+
+audio{
+  width:100%;
+}
+
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin-top:18px;
+}
+
+.controls button{
+  width:52px;
+  height:52px;
+  border:0;
+  border-radius:50%;
+  background:#ffffff15;
+  color:white;
+  font-size:21px;
+}
+
+.controls .play{
+  width:62px;
+  height:62px;
+  background:linear-gradient(135deg,#ff416c,#7b2cff);
+  font-size:25px;
+}
+
+.section-title{
+  padding:10px 18px;
+  font-size:20px;
+}
+
+.song{
+  margin:10px 15px;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(255,255,255,.07);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.song-icon{
+  width:48px;
+  height:48px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#ff416c,#7b2cff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+.song-info{
+  flex:1;
+}
+
+.song-info b{
+  display:block;
+  font-size:15px;
+}
+
+.song-info small{
+  color:#888;
+}
+
+.song button{
+  border:0;
+  background:#ffffff15;
+  color:white;
+  border-radius:50%;
+  width:42px;
+  height:42px;
+  font-size:18px;
+  .favorite-btn{
+  color:#aaa;
+  margin-right:5px;
+}
+
+.favorite-btn.active{
+  color:#ff3b6b;
+}
+}
+
+.footer{
+  text-align:center;
+  padding:25px;
+  color:#666;
+  font-size:13px;
+}
+.search-box{
+  padding:5px 15px 10px;
+}
+
+.search-box input{
+  width:100%;
+  padding:14px 18px;
+  border:none;
+  outline:none;
+  border-radius:15px;
+  background:rgba(255,255,255,.1);
+  color:white;
+  font-size:16px;
+}
+
+.search-box input::placeholder{
+  color:#999;
+}</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>🎵 BrokenEchoes6</h1>
+  <p>My Music • My Stories</p>
+</div>
+
+<div class="now-playing">
+
+  <div class="cover">🎧</div>
+
+  <h2 id="currentTitle">Select a song</h2>
+  <p>BrokenEchoes6</p>
+
+  <audio id="audio" controls></audio>
+
+  <div class="controls">
+    <button onclick="previousSong()">⏮</button>
+    <button class="play" onclick="playPause()">▶</button>
+    <button onclick="nextSong()">⏭</button><button onclick="shuffleSong()">🔀</button>
+  </div>
+
+</div>
+<div class="section-title">
+  🎶 All Songs
+</div>
+
+<div class="search-box">
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="🔍 Search song..."
+    onkeyup="searchSongs()"
+  >
+</div>
+  🎶 All Songs
+</>
+
+<div id="songList"></div>
+
+<div class="footer">
+  © BrokenEchoes6
+</div>
+
+<script>
+
+const songs = [
+
+  {
+    title:"Jise Khuda Banaya",
+    url:"https://files.catbox.moe/hqh00c.mp3"
+  },
+
+  {
+    title:"Kahi Dil Na De Baithe",
+    url:"https://files.catbox.moe/grz4ya.mp3"
+  },
+
+  {
+    title:"Tu Kyun Gayi",
+    url:"https://files.catbox.moe/z0d48f.mp3"
+  },
+
+  {
+    title:"Tere Ishq Ka Asar",
+    url:"https://files.catbox.moe/irx5sz.mp3"
+  },
+
+  {
+    title:"Dard Diya",
+    url:"https://files.catbox.moe/i1rrus.mp3"
+  }
+
+];
+
+let currentIndex = 0;
+
+const audio = document.getElementById("audio");
+const currentTitle = document.getElementById("currentTitle");
+const songList = document.getElementById("songList");
+
+function loadSong(index){
+
+  currentIndex = index;
+
+  audio.src = songs[index].url;
+
+  currentTitle.innerText = songs[index].title;
+
+  audio.play();
+
+}
+
+function playPause(){
+
+  if(!audio.src){
+    loadSong(0);
+    return;
+  }
+
+  if(audio.paused){
+    audio.play();
+  }else{
+    audio.pause();
+  }
+
+}
+
+function nextSong(){
+
+  currentIndex++;
+
+  if(currentIndex >= songs.length){
+    currentIndex = 0;
+  }
+
+  loadSong(currentIndex);
+
+}
+
+function previousSong(){
+
+  currentIndex--;
+
+  if(currentIndex < 0){
+    currentIndex = songs.length - 1;
+  }
+
+  loadSong(currentIndex);
+
+}
+
+function showSongs(){
+function searchSongs(){
+
+  const search =
+    document.getElementById("searchInput")
+    .value
+    .toLowerCase();
+
+  const filtered = songs.filter(song =>
+    song.title.toLowerCase().includes(search)
+  );
+
+  songList.innerHTML = "";
+
+  filtered.forEach(song => {
+
+    const index = songs.indexOf(song);
+
+    const div = document.createElement("div");
+
+    div.className = "song";
+
+    div.innerHTML = `
+      <div class="song-icon">🎵</div>
+
+      <div class="song-info">
+        <b>${song.title}</b>
+        <small>BrokenEchoes6</small>
+      </div>
+
+      <button class="favorite-btn" onclick="toggleFavorite(${index}, this)">♡</button><button class="favorite-btn" onclick="toggleFavorite(${index}, this)">♡</button>
+<button onclick="loadSong(${index})">▶</button>
+    `;
+
+    songList.appendChild(div);
+
+  });
+
+}
+  songList.innerHTML = "";
+
+  songs.forEach((song,index)=>{
+
+    const div = document.createElement("div");
+
+    div.className = "song";
+
+    div.innerHTML = `
+      <div class="song-icon">🎵</div>
+
+      <div class="song-info">
+        <b>${song.title}</b>
+        <small>BrokenEchoes6</small>
+      </div>
+
+      <button onclick="loadSong(${index})">▶</button>
+    `;
+
+    songList.appendChild(div);
+
+  });
+
+}
+
+audio.addEventListener("ended",nextSong);
+
+showSongs();
+function toggleFavorite(index, button){
+
+  if(button.innerText === "♡"){
+
+    button.innerText = "♥";
+    button.classList.add("active");
+
+  }else{
+
+    button.innerText = "♡";
+    button.classList.remove("active");
+
+  }
+
+}
+</script>
+
+</body>
+</html>
