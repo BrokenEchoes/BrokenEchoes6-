@@ -5,5 +5,12 @@
   "display": "standalone",
   "background_color": "#0b0b0f",
   "theme_color": "#0b0b0f",
-  "description": "BrokenEchoes6 Music App"
+  "description": "BrokenEchoes6 Music App",
+  "dir": "auto",
+  "scope": "https://brokenechoes.github.io/BrokenEchoes6-/",
+  "lang": "en",
+  "orientation": "portrait",
+  "categories": [
+    "music"
+  ]
 }
